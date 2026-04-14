@@ -13,9 +13,14 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ error: 'Please fill in all fields' });
     }
 
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ error: 'User already exists' });
+    const existingEmail = await User.findOne({ email });
+    if (existingEmail) {
+      return res.status(400).json({ error: 'Email already in use' });
+    }
+
+    const existingUsername = await User.findOne({ username });
+    if (existingUsername) {
+      return res.status(400).json({ error: 'Username already taken' });
     }
 
     const salt = await bcrypt.genSalt(10);
@@ -29,14 +34,14 @@ router.post('/signup', async (req, res) => {
 
     const token = jwt.sign(
       { userId: user._id, username: user.username, email: user.email },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || 'fallback_secret',
       { expiresIn: '7d' }
     );
 
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: true, // Always true for cross-domain
+      sameSite: 'none', // Required for cross-domain
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/',
     });
@@ -47,7 +52,10 @@ router.post('/signup', async (req, res) => {
     });
   } catch (error) {
     console.error('Signup error:', error);
-    res.status(500).json({ error: 'Something went wrong' });
+    if (error.code === 11000) {
+      return res.status(400).json({ error: 'Username or Email already exists' });
+    }
+    res.status(500).json({ error: error.message || 'Something went wrong' });
   }
 });
 
@@ -71,14 +79,14 @@ router.post('/login', async (req, res) => {
 
     const token = jwt.sign(
       { userId: user._id, username: user.username, email: user.email },
-      process.env.JWT_SECRET,
+      process.env.JWT_SECRET || 'fallback_secret',
       { expiresIn: '7d' }
     );
 
     res.cookie('token', token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'strict',
+      secure: true, // Always true for cross-domain
+      sameSite: 'none', // Required for cross-domain
       maxAge: 7 * 24 * 60 * 60 * 1000,
       path: '/',
     });
