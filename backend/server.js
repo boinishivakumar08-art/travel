@@ -51,6 +51,14 @@ app.use(cors({
 
 connectDB();
 
+app.get('/api/health', (req, res) => {
+  res.status(200).json({ status: 'ok', message: 'Backend is running' });
+});
+
+app.get('/api', (req, res) => {
+  res.status(200).json({ message: 'Welcome to the Travel App API' });
+});
+
 app.use('/api/auth', authRoutes);
 app.use('/api/packages', packageRoutes);
 app.use('/api/bookings', bookingRoutes);
