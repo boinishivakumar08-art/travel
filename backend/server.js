@@ -25,20 +25,27 @@ app.use(cors({
     // allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    const allowedPatterns = [
-      /^http:\/\/localhost:\d+$/,
-      /^http:\/\/127\.0\.0\.1:\d+$/
-    ];
+    const allowedOrigins = [
+      'http://localhost:3000',
+      'http://localhost:3001',
+      'https://travel-alpha-wine.vercel.app',
+      process.env.FRONTEND_URL
+    ].filter(Boolean); // Remove null/undefined
     
-    const isAllowed = allowedPatterns.some(pattern => pattern.test(origin)) || origin === process.env.FRONTEND_URL;
+    // Check if origin matches any of the allowed origins or patterns
+    const isAllowed = allowedOrigins.includes(origin) || 
+                      /^http:\/\/localhost:\d+$/.test(origin);
     
     if (isAllowed) {
       callback(null, true);
     } else {
-      callback(new Error('Not allowed by CORS'));
+      console.warn(`CORS blocked for origin: ${origin}`);
+      callback(null, false); // Return false instead of Error to let CORS handle it gracefully
     }
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
 }));
 
 
