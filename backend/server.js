@@ -56,6 +56,11 @@ app.use('/api/packages', packageRoutes);
 app.use('/api/bookings', bookingRoutes);
 app.use('/api/seed', seedRoutes);
 
+// Global 404 Handler for API
+app.use((req, res) => {
+  res.status(404).json({ error: "Route not found" });
+});
+
 const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, console.log(`Server running on port ${PORT}`));

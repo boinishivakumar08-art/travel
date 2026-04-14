@@ -14,9 +14,15 @@ export default function HomePage() {
   const seedAndFetch = async () => {
     try {
       // Seed the database first
-      await fetch(process.env.NEXT_PUBLIC_API_URL + '/seed', { credentials: 'include' });
+      await fetch('https://travel-x2dx.onrender.com/api/seed', { 
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      });
       // Then fetch packages
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + '/packages', { credentials: 'include' });
+      const res = await fetch('https://travel-x2dx.onrender.com/api/packages', { 
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      });
       const data = await res.json();
       if (data.packages) {
         setFeaturedPackages(data.packages.filter(p => p.featured).slice(0, 4));

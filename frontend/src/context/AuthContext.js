@@ -14,8 +14,9 @@ export function AuthProvider({ children }) {
 
   const checkUser = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/me`, {
+      const res = await fetch(`https://travel-x2dx.onrender.com/api/auth/me`, {
         credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
       });
       const data = await res.json();
       if (data.user) {
@@ -30,9 +31,10 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL}/auth/logout`, {
+      await fetch(`https://travel-x2dx.onrender.com/api/auth/logout`, {
         method: 'POST',
         credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
       });
       setUser(null);
     } catch (err) {

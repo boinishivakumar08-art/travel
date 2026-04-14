@@ -18,15 +18,24 @@ export default function PackagesPage() {
   const loadData = async () => {
     try {
       // Seed DB and fetch packages
-      await fetch(process.env.NEXT_PUBLIC_API_URL + '/seed', { credentials: 'include' });
-      const pkgRes = await fetch(process.env.NEXT_PUBLIC_API_URL + '/packages', { credentials: 'include' });
+      await fetch('https://travel-x2dx.onrender.com/api/seed', { 
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      });
+      const pkgRes = await fetch('https://travel-x2dx.onrender.com/api/packages', { 
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' }
+      });
       const pkgData = await pkgRes.json();
 
       if (pkgData.packages) setPackages(pkgData.packages);
 
       // Only fetch bookings if user is logged in
       if (user) {
-        const bookingRes = await fetch(process.env.NEXT_PUBLIC_API_URL + '/bookings', { credentials: 'include' });
+        const bookingRes = await fetch('https://travel-x2dx.onrender.com/api/bookings', { 
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' }
+        });
         if (bookingRes.ok) {
           const bookingData = await bookingRes.json();
           if (bookingData.bookings) {
@@ -58,7 +67,8 @@ export default function PackagesPage() {
     setBookingLoading(pkg._id);
 
     try {
-      const res = await fetch(process.env.NEXT_PUBLIC_API_URL + '/bookings', { credentials: 'include',
+      const res = await fetch('https://travel-x2dx.onrender.com/api/bookings', { 
+        credentials: 'include',
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
